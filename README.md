@@ -1,0 +1,2 @@
+# latexdiff-bot
+ 
