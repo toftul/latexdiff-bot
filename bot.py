@@ -49,17 +49,9 @@ def downloader(update, context):
     zipfile = 'paper.zip'
     makediffPDF(zipfile, folder)
     # send diff.pdf
-    # https://www.youtube.com/watch?v=DCS1FImy_P0
     # https://www.codegrepper.com/code-examples/python/python-telegram-bot+send+file
     path_to_diff = os.popen('find . -name "diff.pdf"').read()
     path_to_diff = path_to_diff.replace('\n', '')
-    #f = open(path_to_diff, 'rb')
-    #file_bytes = f.read()
-    #f.close()
-    #response = {
-    #    'document': (f.name, file_bytes)
-    #}
-    #method_name = 'sendDocument'
     context.bot.send_document(chat_id=chat_id, document=open(path_to_diff, 'rb'))
     # clean up
     shutil.rmtree(folder)
