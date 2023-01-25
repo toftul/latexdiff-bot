@@ -23,3 +23,7 @@ List of commands under the hood:
 ```
 
 It supports bibligoraphy.
+
+## Technical info
+
+Using library https://github.com/python-telegram-bot/python-telegram-bot
