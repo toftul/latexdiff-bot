@@ -14,7 +14,7 @@ Bot will do the rest and after some time send you a `diff.pdf` in response.
 Commands under the hood:
 
 ```shell
-> latexdiff ANY_NAME.tex ANY_NAME_old.tex > diff.tex
+> latexdiff ANY_NAME_old.tex ANY_NAME.tex > diff.tex
 > latex -interaction=nonstopmode diff
 > bibtex diff
 > latex -interaction=nonstopmode diff
