@@ -14,12 +14,12 @@ Bot will do the rest and after some time send you a `diff.pdf` in response.
 Commands under the hood:
 
 ```shell
-> latexdiff ANY_NAME_old.tex ANY_NAME.tex > diff.tex
-> latex -interaction=nonstopmode diff
-> bibtex diff
-> latex -interaction=nonstopmode diff
-> latex -interaction=nonstopmode diff
-> pdflatex -interaction=nonstopmode diff
+latexdiff ANY_NAME_old.tex ANY_NAME.tex > diff.tex
+latex -interaction=nonstopmode diff
+bibtex diff
+latex -interaction=nonstopmode diff
+latex -interaction=nonstopmode diff
+pdflatex -interaction=nonstopmode diff
 ```
 
 It supports bibligoraphy.
