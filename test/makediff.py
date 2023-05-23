@@ -95,7 +95,7 @@ def create_diffpdf(old_tex_file, new_tex_file, dir_new_full):
     shutil.move('new/diff.pdf', 'diff.pdf')
     
     
-def do_stuff(old_zip, new_zip):
+def do_stuff(old_zip, new_zip, touch_images=True):
     dir_new = 'new'
     dir_old = 'old'
     
@@ -108,23 +108,23 @@ def do_stuff(old_zip, new_zip):
     old_tex_file = find_main_tex(dir_old)
     new_tex_file = find_main_tex(dir_new)
     
-    old_image_paths = get_image_paths(old_tex_file)
-    new_image_paths = get_image_paths(new_tex_file)
-    
-    changed_images = find_changed_images(old_image_paths, new_image_paths)
-    
-    
-    new_image_paths_full = []
-    for i in range(len(new_image_paths)):
-        new_image_paths_full.append(os.path.join(dir_new_full, new_image_paths[i]))
+    if touch_images:
+        old_image_paths = get_image_paths(old_tex_file)
+        new_image_paths = get_image_paths(new_tex_file)
 
-    old_image_paths_full = []
-    for i in range(len(old_image_paths)):
-        old_image_paths_full.append(os.path.join(dir_old_full, old_image_paths[i]))
+        changed_images = find_changed_images(old_image_paths, new_image_paths)
 
-    blank_image_path = os.path.join(os.getcwd(), 'blank.jpg')
-    
-    make_all_collages(old_image_paths_full, new_image_paths_full, changed_images, blank_image_path)
+        new_image_paths_full = []
+        for i in range(len(new_image_paths)):
+            new_image_paths_full.append(os.path.join(dir_new_full, new_image_paths[i]))
+
+        old_image_paths_full = []
+        for i in range(len(old_image_paths)):
+            old_image_paths_full.append(os.path.join(dir_old_full, old_image_paths[i]))
+
+        blank_image_path = os.path.join(os.getcwd(), 'blank.jpg')
+
+        make_all_collages(old_image_paths_full, new_image_paths_full, changed_images, blank_image_path)
     
     create_diffpdf(old_tex_file, new_tex_file, dir_new_full)
     
@@ -136,5 +136,5 @@ def do_stuff(old_zip, new_zip):
 if __name__ == "__main__":
     new_zip = 'new.zip'
     old_zip = 'old.zip'
-    do_stuff(old_zip, new_zip)
+    do_stuff(old_zip, new_zip, touch_images=True)
     
