@@ -22,8 +22,9 @@ def add_box(img, boxcolor='red'):
 
 def add_text(img, text='This is a text', fontsize=40, textcolor='blue'):
     # Define the text to be added and the font
-    font = ImageFont.truetype("Arial.ttf", fontsize)
-
+    #font = ImageFont.truetype("Arial.ttf", fontsize)
+    font = ImageFont.truetype("/usr/share/texlive/texmf-dist/fonts/truetype/google/noto/NotoSans-Regular.ttf", fontsize)
+    
     # Calculate the size of the text
     text_size = font.getbbox(text)
 

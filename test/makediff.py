@@ -3,48 +3,138 @@ import shutil
 import subprocess
 import zipfile
 
-# Extract the contents of new.zip and old.zip
-with zipfile.ZipFile('new.zip', 'r') as new_zip, zipfile.ZipFile('old.zip', 'r') as old_zip:
-    new_zip.extractall('new')
-    old_zip.extractall('old')
+from icecream import ic
 
-# Find the main .tex file in the new directory
-new_directory = os.path.join(os.getcwd(), 'new')
-new_tex_file = None
-for root, dirs, files in os.walk(new_directory):
-    for file in files:
-        if file.endswith('.tex'):
-            new_tex_file = os.path.join(root, file)
+from collage import make_diff_image
+
+def extract(path_to_zip, target_dir):
+    with zipfile.ZipFile(path_to_zip, 'r') as target_zip:
+        target_zip.extractall(target_dir)
+        
+        
+def find_main_tex(path):
+    directory = os.path.join(os.getcwd(), path)
+    tex_file = None
+    for root, dirs, files in os.walk(directory):
+        for file in files:
+            if file.endswith('.tex'):
+                tex_file = os.path.join(root, file)
+                break
+        if tex_file:
             break
-    if new_tex_file:
-        break
+    return tex_file
 
-# Find the main .tex file in the old directory
-old_directory = os.path.join(os.getcwd(), 'old')
-old_tex_file = None
-for root, dirs, files in os.walk(old_directory):
-    for file in files:
-        if file.endswith('.tex'):
-            old_tex_file = os.path.join(root, file)
-            break
-    if old_tex_file:
-        break
 
-# Create the diff.tex file using latexdiff
-diff_file = 'diff.tex'
-latexdiff_command = f'latexdiff {old_tex_file} {new_tex_file} > new/{diff_file}'
-subprocess.run(latexdiff_command, shell=True, check=True)
+def get_image_paths(target_tex_file):
+    image_paths = []
+    with open(target_tex_file, 'r') as tex_file:
+        for line in tex_file:
+            if not line.strip().startswith('%') and 'includegraphics' in line:
+                start_index = line.find('{') + 1
+                end_index = line.find('}')
+                image_path = line[start_index:end_index]
+                image_paths.append(image_path)
+    return image_paths
 
-os.chdir('new')
 
-# Compile the diff.tex file
-pdflatex_command = f'latexmk -f -pdf {diff_file}'
-subprocess.run(pdflatex_command, shell=True, check=True)
+def find_changed_images(old_image_paths, new_image_paths):
+    """
+        for the input
+            old_image_paths = ['fig1', 'fig2', 'fig3', 'fig4', 'fig5']
+            new_image_paths = ['fig1', 'fig2_new', 'fig3', 'fig4', 'fig5', 'fig6']
+        the return would be
+            [False, True, False, False, False, True]
+    """
+    changed_images = [True] * len(new_image_paths)
 
-os.chdir('..')
+    for index, new_imag in enumerate(new_image_paths):
+        if index < len(old_image_paths):
+            if old_image_paths[index] == new_imag:
+                changed_images[index] = False
+                
+    return changed_images
 
-shutil.move('new/diff.pdf', 'diff.pdf')
 
-# Clean up temporary directories and files
-shutil.rmtree('new')
-shutil.rmtree('old')
+def make_all_collages(old_image_paths_full, new_image_paths_full, changed_images, blank_image_path):
+    for i, new_image_path in enumerate(new_image_paths_full):
+        if changed_images[i]:
+            if i < len(old_image_paths_full):
+                make_diff_image(
+                    path_img_old=old_image_paths_full[i], 
+                    path_img_new=new_image_paths_full[i], 
+                    path_img_diff=new_image_paths_full[i]
+                )
+            else:
+                make_diff_image(
+                    path_img_old=blank_image_path, 
+                    path_img_new=new_image_paths_full[i], 
+                    path_img_diff=new_image_paths_full[i]
+                )
+                
+def create_diffpdf(old_tex_file, new_tex_file, dir_new_full):
+    diff_file = 'diff.tex'
+    latexdiff_command = f'latexdiff {old_tex_file} {new_tex_file} > {dir_new_full}/{diff_file}'
+    subprocess.run(
+        latexdiff_command, 
+        shell=True, 
+        #check=True
+    )
+    
+    os.chdir(dir_new_full)
+    
+    # Compile the diff.tex file
+    latexmk_command = f'latexmk -f -pdf {diff_file}'
+    subprocess.run(
+        latexmk_command, 
+        shell=True, 
+        #check=True
+    )
+
+    os.chdir('..')
+    
+    shutil.move('new/diff.pdf', 'diff.pdf')
+    
+    
+def do_stuff(old_zip, new_zip):
+    dir_new = 'new'
+    dir_old = 'old'
+    
+    dir_new_full = os.path.join(os.getcwd(), dir_new)
+    dir_old_full = os.path.join(os.getcwd(), dir_old)
+
+    extract(new_zip, dir_new)
+    extract(old_zip, dir_old)
+
+    old_tex_file = find_main_tex(dir_old)
+    new_tex_file = find_main_tex(dir_new)
+    
+    old_image_paths = get_image_paths(old_tex_file)
+    new_image_paths = get_image_paths(new_tex_file)
+    
+    changed_images = find_changed_images(old_image_paths, new_image_paths)
+    
+    
+    new_image_paths_full = []
+    for i in range(len(new_image_paths)):
+        new_image_paths_full.append(os.path.join(dir_new_full, new_image_paths[i]))
+
+    old_image_paths_full = []
+    for i in range(len(old_image_paths)):
+        old_image_paths_full.append(os.path.join(dir_old_full, old_image_paths[i]))
+
+    blank_image_path = os.path.join(os.getcwd(), 'blank.jpg')
+    
+    make_all_collages(old_image_paths_full, new_image_paths_full, changed_images, blank_image_path)
+    
+    create_diffpdf(old_tex_file, new_tex_file, dir_new_full)
+    
+    # Clean up temporary directories and files
+    shutil.rmtree(dir_new_full)
+    shutil.rmtree(dir_old_full)
+    
+    
+if __name__ == "__main__":
+    new_zip = 'new.zip'
+    old_zip = 'old.zip'
+    do_stuff(old_zip, new_zip)
+    
