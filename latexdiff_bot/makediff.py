@@ -3,9 +3,22 @@ import shutil
 import subprocess
 import zipfile
 
-from icecream import ic
+#from icecream import ic
 
 from collage import make_diff_image
+
+def get_main_tex_files(directory):
+    files = os.listdir(directory)
+    # Filter out the .tex files that contain '\documentclass{'
+    tex_files_with_documentclass = []
+    for file_name in files:
+        if file_name.endswith('.tex'):
+            file_path = os.path.join(directory, file_name)
+            with open(file_path, 'r') as file:
+                content = file.read()
+                if '\documentclass{' in content:
+                    tex_files_with_documentclass.append(file_name)
+
 
 def extract(path_to_zip, target_dir):
     with zipfile.ZipFile(path_to_zip, 'r') as target_zip:
@@ -70,7 +83,24 @@ def make_all_collages(old_image_paths_full, new_image_paths_full, changed_images
                     path_img_new=new_image_paths_full[i], 
                     path_img_diff=new_image_paths_full[i]
                 )
-                
+
+def latexdiffpdf(old_tex_file, new_tex_file, dir_new_full, diff_file):
+    full_path_diff_file = os.path.join(dir_new_full, diff_file)
+    latexdiff_command = f'latexdiff {old_tex_file} {new_tex_file} > {full_path_diff_file}'
+    subprocess.run(
+        latexdiff_command, 
+        shell=True, 
+        #check=True
+    )
+    
+    # Compile the diff.tex file
+    latexmk_command = f'latexmk -cd -f -pdf {full_path_diff_file}'
+    subprocess.run(
+        latexmk_command, 
+        shell=True, 
+        #check=True
+    )
+
 def create_diffpdf(old_tex_file, new_tex_file, dir_new_full):
     diff_file = 'diff.tex'
     latexdiff_command = f'latexdiff {old_tex_file} {new_tex_file} > {dir_new_full}/{diff_file}'

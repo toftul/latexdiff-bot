@@ -10,7 +10,7 @@ homepage = "https://github.com/toftul/latexdiff-bot"
 license = "MIT"
 
 [tool.poetry.dependencies]
-python = "^3.10"
+python = "^3.9"
 python-telegram-bot = "^20.0"
 icecream = "^2.1.0"
 Pillow = "^9.3.0"
