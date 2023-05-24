@@ -256,7 +256,7 @@ async def treat_old_file(update: Update, context: CallbackContext):
             return SEND_NEW_FILE
 
  
-async def treat_new_file(update: Update, context: CallbackContext):
+async def treat_new_file(update: Update, context: ContextTypes.DEFAULT_TYPE):
     chat_id = update.effective_chat.id
     working_dir = str(chat_id)
     if not os.path.exists(working_dir):
@@ -267,17 +267,25 @@ async def treat_new_file(update: Update, context: CallbackContext):
     if file.file_name.endswith('.tex'):
         # download file
         new_tex_path = os.path.join(working_dir, DEFAULT_NEW_DIR, DEFAULT_NEW_TEX)
-        await context.bot.get_file(
+        TheFile = await context.bot.get_file(
             update.message.document.file_id
-        ).download_to_drive(custom_path=new_tex_path)
+        )
+        await TheFile.download_to_drive(custom_path=new_tex_path)
+        await context.bot.send_message(
+            chat_id=update.effective_chat.id,
+            text='Got it. Now send the old version (tex or zip).'
+        )
+
         return SEND_OLD_FILE
     elif file.file_name.endswith('.zip'):
         # download file
         new_zip_path = os.path.join(working_dir, DEFAULT_NEW_ZIP)
         #print(context.bot.get_file(update.message.document.file_id))
-        await context.bot.get_file(
+        TheFile = await context.bot.get_file(
             update.message.document.file_id
-        ).download_to_drive(custom_path=new_zip_path)
+        )
+        await TheFile.download_to_drive(custom_path=new_zip_path)
+        
         new_dir_path = os.path.join(working_dir, DEFAULT_NEW_DIR)
         extract(
             path_to_zip=new_zip_path, 
@@ -308,6 +316,10 @@ async def treat_new_file(update: Update, context: CallbackContext):
             )
             return SEND_NEW_FILE
         else:
+            await context.bot.send_message(
+                chat_id=update.effective_chat.id,
+                text='Got it. Now send the old version (tex or zip).'
+            )
             return SEND_OLD_FILE
 
 

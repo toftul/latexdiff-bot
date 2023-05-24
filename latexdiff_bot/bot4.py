@@ -48,9 +48,12 @@ Send me a '.tex' or '.zip' of your current latex project.
         text=starttext,
     )
 
+
 async def load(update: Update, context: ContextTypes.DEFAULT_TYPE):
     chat_id = update.effective_chat.id
-    await context.bot.get_file(update.message.document.file_id).download_to_drive(custom_path='wow.zip')
+    file_id = update.message.document.file_id
+    new_file = await context.bot.get_file(file_id)
+    await new_file.download_to_drive('wow.zip')
 
     await context.bot.send_message(
         chat_id=update.effective_chat.id,

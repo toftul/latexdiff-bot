@@ -18,6 +18,7 @@ def get_main_tex_files(directory):
                 content = file.read()
                 if '\documentclass{' in content:
                     tex_files_with_documentclass.append(file_name)
+    return tex_files_with_documentclass
 
 
 def extract(path_to_zip, target_dir):
