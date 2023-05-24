@@ -7,7 +7,10 @@ readme = "README.md"
 packages = [{include = "latexdiff_bot"}]
 
 [tool.poetry.dependencies]
-python = "^3.11"
+python = "^3.10"
+python-telegram-bot = "^20.*"
+icecream = "^2.*"
+Pillow = "^9.*"
 
 
 [build-system]
