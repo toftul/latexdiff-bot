@@ -3,7 +3,7 @@ import telegram
 from telegram import Update
 from telegram.ext import Updater, MessageHandler, filters, ApplicationBuilder, CommandHandler, ContextTypes
 
-#https://stackoverflow.com/a/1039737
+# https://stackoverflow.com/a/1039737
 import shutil
 
 # debugging
