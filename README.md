@@ -1,5 +1,18 @@
 # latexdiff-bot
 
+**! UNDER DEVELOPMENT !**
+
+**Currently this bot does not work as inteded.**
+
+## TODO
+1. image comparison tool
+2. peek old and file
+3. detect git, ask which commit to compare with
+4. Web version 
+
+
+## Old way
+
 Send a .zip archive with your latex project.
 It has to contain at least two files:
 
