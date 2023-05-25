@@ -19,6 +19,7 @@ Here's how you can use the bot:
 2. detect git, ask which commit to compare with?!
 3. Web version 
 4. Better support for bibligoraphy?
+5. Support for mulfile projects. Add flatten flag.
 
 
 ## Under the hood
