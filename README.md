@@ -20,6 +20,7 @@ Here's how you can use the bot:
 3. Web version 
 4. Better support for bibligoraphy?
 5. Support for mulfile projects. Add flatten flag.
+6. Option to send just `diff.tex`.
 
 
 ## Under the hood
