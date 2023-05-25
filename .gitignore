@@ -476,3 +476,4 @@ poetry.lock
 notebooks/test_latex
 notebooks/new
 notebooks/old
+latexdiff_bot/user_data
