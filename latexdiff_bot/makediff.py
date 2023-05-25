@@ -9,14 +9,14 @@ from collage import make_diff_image
 
 def get_main_tex_files(directory):
     files = os.listdir(directory)
-    # Filter out the .tex files that contain '\documentclass{'
+    # Filter out the .tex files that contain '\documentclass'
     tex_files_with_documentclass = []
     for file_name in files:
         if file_name.endswith('.tex'):
             file_path = os.path.join(directory, file_name)
             with open(file_path, 'r') as file:
                 content = file.read()
-                if '\documentclass{' in content:
+                if '\documentclass' in content:
                     tex_files_with_documentclass.append(file_name)
     return tex_files_with_documentclass
 
