@@ -1,42 +1,33 @@
 # latexdiff-bot
 
-**! UNDER DEVELOPMENT !**
+Welcome to the LaTeX Diff Bot!
 
-**Currently this bot does not work as inteded.**
+This bot allows you to generate a LaTeX diff file by comparing two versions of a LaTeX document and receive a PDF with the highlighted changes using [latexdiff](https://www.overleaf.com/learn/latex/Articles/Using_Latexdiff_For_Marking_Changes_To_Tex_Documents).
+
+Here's how you can use the bot:
+
+1. Send `/start` to begin the interaction.
+2. Upload the original LaTeX project by sending a single `.tex` file or an entire `.zip`.
+3. If there is an ambiguity which file is the main document you will be promted to select one.
+4. Upload the old version (`.tex` or `.zip`).
+5. If there is an ambiguity which file is the main document you will be promted to select one.
+6. The bot will generate a LaTeX diff file and process it.
+7. Once the diff file is processed, the bot will send you a PDF with the changes highlighted.
 
 ## TODO
-1. image comparison tool
-2. peek old and file
-3. detect git, ask which commit to compare with
-4. Web version 
+1. imporove image comparison tool (PDFs aren't supported now)
+2. detect git, ask which commit to compare with?!
+3. Web version 
+4. Better support for bibligoraphy?
 
 
-## Old way
+## Under the hood
 
-Send a .zip archive with your latex project.
-It has to contain at least two files:
-
-1. `ANY_NAME.tex`
-2. `ANY_NAME_old.tex`
-
-It is important to have a traling `_old` in the old file. 
-
-Bot will do the rest and after some time send you a `diff.pdf` in response.
-
-
-Commands under the hood:
-
+Diff file created by
 ```shell
-latexdiff ANY_NAME_old.tex ANY_NAME.tex > diff.tex
-latex -interaction=nonstopmode diff
-bibtex diff
-latex -interaction=nonstopmode diff
-latex -interaction=nonstopmode diff
-pdflatex -interaction=nonstopmode diff
+latexmk -interaction=nonstopmode -cd -f -pdf diff.tex
 ```
 
-It supports bibligoraphy.
+## Author
 
-## Technical info
-
-Using library https://github.com/python-telegram-bot/python-telegram-bot
+Created by Ivan Toftul
