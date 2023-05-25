@@ -62,12 +62,16 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     # and a string as callback_data
     # The keyboard is a list of button rows, where each row is in turn
     # a list (hence `[[...]]`).
-    keyboard = [
-        [
-            InlineKeyboardButton("1", callback_data=str(ONE)),
-            InlineKeyboardButton("2", callback_data=str(TWO)),
-        ]
-    ]
+    keyboard = [[]]
+    keyboard[0].append(InlineKeyboardButton("123fsdf1"))
+    keyboard[0].append(InlineKeyboardButton("2"))
+    
+    # keyboard = [
+    #     [
+    #         InlineKeyboardButton("123fsdf1", callback_data=str(ONE)),
+    #         InlineKeyboardButton("2", callback_data=str(TWO)),
+    #     ]
+    # ]
     reply_markup = InlineKeyboardMarkup(keyboard)
     # Send message with text and appended InlineKeyboard
     await update.message.reply_text("Start handler, Choose a route", reply_markup=reply_markup)
