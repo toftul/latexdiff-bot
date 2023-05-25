@@ -98,7 +98,7 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     starttext = '''
 Send me a `.tex` or `.zip` of your current latex project
     '''
-    keyboard = [["/start", "/help"]]
+    keyboard = [["/start", "/settings", "/help"]]
 
     keyboard = ReplyKeyboardMarkup(
         keyboard=keyboard,
@@ -121,6 +121,61 @@ Send me a `.tex` or `.zip` of your current latex project
     )
     return SEND_NEW_FILE
 
+
+async def show_settings(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    chat_id = update.effective_chat.id
+    config_json = load_json_file(USER_CONFIG_NAME)
+
+    if not str(chat_id) in config_json:
+        config_json[str(chat_id)] = {"touch_images" : False}
+
+    touch_images = config_json[str(chat_id)]["touch_images"]
+    write_json_file(USER_CONFIG_NAME, config_json)
+
+    # Create the InlineKeyboardMarkup with On and Off buttons
+    keyboard = [
+        [
+            InlineKeyboardButton("On", callback_data="toggle_on"),
+            InlineKeyboardButton("Off", callback_data="toggle_off")
+        ]
+    ]
+    reply_markup = InlineKeyboardMarkup(keyboard)
+
+    # Send the message with the InlineKeyboardMarkup
+    response_text = "Currently diff image tool is *off*\. Remeber, it is still in beta\."
+    if touch_images:
+        response_text = "Currently diff image tool is *on*\. Remeber, it is still in beta\."
+    
+    await update.message.reply_text(
+        text=response_text, 
+        parse_mode=constants.ParseMode.MARKDOWN_V2,
+        reply_markup=reply_markup
+    )
+
+async def handle_toggle_image_touch_settings(update: Update, context: CallbackContext):
+    query = update.callback_query
+    callback_data = query.data
+    chat_id = update.effective_chat.id
+    config_json = load_json_file(USER_CONFIG_NAME)
+    #touch_images = config_json[str(chat_id)]["touch_images"]
+
+    if callback_data == "toggle_on":
+        touch_images = True
+    else:
+        touch_images = False
+
+    config_json[str(chat_id)]["touch_images"] = touch_images
+    write_json_file(USER_CONFIG_NAME, config_json)
+
+    # Send the message with the InlineKeyboardMarkup
+    response_text = "Diff image tool is *off*\."
+    if touch_images:
+        response_text = "Diff image tool is *on*\."
+    await query.edit_message_text(
+        text=response_text,
+        parse_mode=constants.ParseMode.MARKDOWN_V2
+    )
+    
 
 async def do_latexdiff_and_collage(working_dir, chat_id):
     touch_images = True
@@ -161,44 +216,6 @@ async def do_latexdiff_and_collage(working_dir, chat_id):
         dir_new_full=os.path.join(working_dir, DEFAULT_NEW_DIR),
         diff_file=DIFF_TEX_NAME
     )
-    
-
-# async def ask_for_new_main_tex(update: Update, context: ContextTypes.DEFAULT_TYPE):
-#     chat_id = update.effective_chat.id
-#     working_dir = os.path.join(USER_DATA_DIR, str(chat_id))
-
-#     query = update.callback_query
-#     await query.answer()
-#     new_main_tex_options = get_main_tex_files(
-#         directory=os.path.join(working_dir, DEFAULT_NEW_DIR)
-#     )
-#     keyboard = [[]]
-#     for new_main_tex_option in enumerate(new_main_tex_options):
-#         keyboard[0].append(InlineKeyboardButton(new_main_tex_option))
-
-#     reply_markup = InlineKeyboardMarkup(keyboard)
-#     await query.edit_message_text(
-#         text='It seems that there are more then one main `.tex` files\. Select the one you wish to compare',
-#         parse_mode=constants.ParseMode.MARKDOWN_V2,
-#         reply_markup=reply_markup
-#     )
-
-# async def ask_for_new_main_tex2(update: Update, context: ContextTypes.DEFAULT_TYPE):
-#     chat_id = update.effective_chat.id
-#     working_dir = os.path.join(USER_DATA_DIR, str(chat_id))
-
-#     new_main_tex_options = get_main_tex_files(
-#         directory=os.path.join(working_dir, DEFAULT_NEW_DIR)
-#     )
-#     keyboard = [[]]
-#     for new_main_tex_option in enumerate(new_main_tex_options):
-#         keyboard[0].append(InlineKeyboardButton(new_main_tex_option))
-#     reply_markup = InlineKeyboardMarkup(keyboard)
-#     await update.message.reply_text(
-#         text='It seems that there are more then one main `.tex` files\. Select the one you wish to compare',
-#         parse_mode=constants.ParseMode.MARKDOWN_V2,
-#         reply_markup=reply_markup
-#     )
 
 
 async def mark_new_main_tex(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -276,6 +293,9 @@ async def treat_old_file(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if file.file_name.endswith('.tex'):
         # download file
         old_tex_path = os.path.join(working_dir, DEFAULT_OLD_DIR, DEFAULT_OLD_TEX)
+        if not os.path.exists(os.path.join(working_dir, DEFAULT_OLD_DIR)):
+            os.mkdir(os.path.join(working_dir, DEFAULT_OLD_DIR))
+
         TheFile = await context.bot.get_file(
             update.message.document.file_id
         )
@@ -285,7 +305,7 @@ async def treat_old_file(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
         # DO THE DIFF PDF
         #################
-        await do_latexdiff_and_collage(working_dir=working_dir)
+        await do_latexdiff_and_collage(working_dir=working_dir, chat_id=chat_id)
         path_to_diff = os.path.join(working_dir, DEFAULT_NEW_DIR, DIFF_PDF_NAME)
         await context.bot.send_document(
             chat_id=chat_id,
@@ -371,6 +391,8 @@ async def treat_new_file(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if file.file_name.endswith('.tex'):
         # download file
         new_tex_path = os.path.join(working_dir, DEFAULT_NEW_DIR, DEFAULT_NEW_TEX)
+        if not os.path.exists(os.path.join(working_dir, DEFAULT_NEW_DIR)):
+            os.mkdir(os.path.join(working_dir, DEFAULT_NEW_DIR))
         TheFile = await context.bot.get_file(
             update.message.document.file_id
         )
@@ -441,6 +463,8 @@ if __name__ == '__main__':
 
     start_handler = CommandHandler('start', start)
     help_handler = CommandHandler('help', help)
+    settings_handler = CommandHandler('settings', show_settings)
+    toggle_query = CallbackQueryHandler(handle_toggle_image_touch_settings)
 
     conv_handler = ConversationHandler(
         entry_points=[start_handler],
@@ -474,6 +498,8 @@ if __name__ == '__main__':
 
     application.add_handler(conv_handler)
     application.add_handler(help_handler)
+    application.add_handler(settings_handler)
+    application.add_handler(toggle_query)
 
     # Other handlers
     unknown_handler = MessageHandler(filters.COMMAND, unknown)

@@ -95,7 +95,7 @@ def latexdiffpdf(old_tex_file, new_tex_file, dir_new_full, diff_file):
     )
     
     # Compile the diff.tex file
-    latexmk_command = f'latexmk -cd -f -pdf {full_path_diff_file}'
+    latexmk_command = f'latexmk -interaction=nonstopmode -cd -f -pdf {full_path_diff_file}'
     subprocess.run(
         latexmk_command, 
         shell=True, 
@@ -114,7 +114,7 @@ def create_diffpdf(old_tex_file, new_tex_file, dir_new_full):
     os.chdir(dir_new_full)
     
     # Compile the diff.tex file
-    latexmk_command = f'latexmk -f -pdf {diff_file}'
+    latexmk_command = f'latexmk -interaction=nonstopmode -f -pdf {diff_file}'
     subprocess.run(
         latexmk_command, 
         shell=True, 
