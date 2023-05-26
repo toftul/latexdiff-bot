@@ -17,11 +17,12 @@ Here's how you can use the bot:
 ## TODO
 1. imporove image comparison tool (PDFs aren't supported now)
 2. detect git, ask which commit to compare with?!
-3. Web version 
+3. Web version?
 4. Better support for bibligoraphy?
 5. Support for mulfile projects. Add flatten flag.
 6. Option to send just `diff.tex`.
 7. Option to render quickly using `pdflatex` without bibliography.
+8. Handle situation when there is no `diff.pdf` produced.
 
 
 ## Under the hood
