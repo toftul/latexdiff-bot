@@ -21,6 +21,7 @@ Here's how you can use the bot:
 4. Better support for bibligoraphy?
 5. Support for mulfile projects. Add flatten flag.
 6. Option to send just `diff.tex`.
+7. Option to render quickly using `pdflatex` without bibliography.
 
 
 ## Under the hood
