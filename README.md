@@ -34,4 +34,4 @@ latexmk -interaction=nonstopmode -cd -f -pdf diff.tex
 
 ## Author
 
-Created by Ivan Toftul
+Created by Ivan Toftul.
