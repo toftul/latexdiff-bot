@@ -96,7 +96,7 @@ Created by [Ivan Toftul](tg://user?id=63688320)
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     starttext = '''
-Send me a `.tex` or `.zip` of your current latex project
+Send me a `.tex` or `.zip` of your current latex project\.
     '''
     keyboard = [["/start", "/settings", "/help"]]
 
@@ -170,7 +170,7 @@ async def handle_toggle_image_touch_settings(update: Update, context: CallbackCo
     # Send the message with the InlineKeyboardMarkup
     response_text = "Diff image tool is *off*\."
     if touch_images:
-        response_text = "Diff image tool is *on*\."
+        response_text = "Diff image tool is *on*\. It does not support vector images yet\."
     await query.edit_message_text(
         text=response_text,
         parse_mode=constants.ParseMode.MARKDOWN_V2
@@ -234,7 +234,7 @@ async def mark_new_main_tex(update: Update, context: ContextTypes.DEFAULT_TYPE):
         dst=os.path.join(working_dir, DEFAULT_NEW_DIR, DEFAULT_NEW_TEX)
     )
     await query.edit_message_text(
-        text='''Understood\! Now send the old version \(`tex` or `zip`\)''',
+        text='''Understood\! Now send the old version \(`tex` or `zip`\)\.''',
         parse_mode=constants.ParseMode.MARKDOWN_V2
     )
     return SEND_OLD_FILE
@@ -266,11 +266,18 @@ async def mark_old_main_tex(update: Update, context: ContextTypes.DEFAULT_TYPE):
     # DO THE DIFF PDF
     #################
     await do_latexdiff_and_collage(working_dir=working_dir, chat_id=chat_id)
-    path_to_diff = os.path.join(working_dir, DEFAULT_NEW_DIR, DIFF_PDF_NAME)
-    await context.bot.send_document(
-        chat_id=chat_id,
-        document=open(path_to_diff, 'rb')
-    )
+    if os.path.exists(os.path.join(working_dir, DEFAULT_NEW_DIR, DIFF_PDF_NAME)):
+        path_to_diff = os.path.join(working_dir, DEFAULT_NEW_DIR, DIFF_PDF_NAME)
+        await context.bot.send_document(
+            chat_id=chat_id,
+            document=open(path_to_diff, 'rb')
+        )
+    else:
+        await query.edit_message_text(
+            text='''Failed :\(''',
+            parse_mode=constants.ParseMode.MARKDOWN_V2
+        )
+
     # clean up
     shutil.rmtree(os.path.join(working_dir, DEFAULT_NEW_DIR))
     shutil.rmtree(os.path.join(working_dir, DEFAULT_OLD_DIR))
@@ -305,12 +312,22 @@ async def treat_old_file(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
         # DO THE DIFF PDF
         #################
+        await update.message.reply_text(
+            text='Got you\! Making `diff.pdf` now\.\.\.',
+            parse_mode=constants.ParseMode.MARKDOWN_V2,
+        )
         await do_latexdiff_and_collage(working_dir=working_dir, chat_id=chat_id)
         path_to_diff = os.path.join(working_dir, DEFAULT_NEW_DIR, DIFF_PDF_NAME)
-        await context.bot.send_document(
-            chat_id=chat_id,
-            document=open(path_to_diff, 'rb')
-        )
+        if os.path.exists(path_to_diff):
+            await context.bot.send_document(
+                chat_id=chat_id,
+                document=open(path_to_diff, 'rb')
+            )
+        else:
+            await update.message.reply_text(
+                text='''Failed :\(''',
+                parse_mode=constants.ParseMode.MARKDOWN_V2
+            )
         # clean up
         shutil.rmtree(os.path.join(working_dir, DEFAULT_NEW_DIR))
         shutil.rmtree(os.path.join(working_dir, DEFAULT_OLD_DIR))
@@ -341,7 +358,7 @@ async def treat_old_file(update: Update, context: ContextTypes.DEFAULT_TYPE):
             
             reply_markup = InlineKeyboardMarkup(keyboard)
             await update.message.reply_text(
-                text='It seems that there are more then one main `.tex` files\. Select the one you wish to compare',
+                text='It seems that there are more then one main `.tex` files\. Select the one you wish to compare\.',
                 parse_mode=constants.ParseMode.MARKDOWN_V2,
                 reply_markup=reply_markup
             )
@@ -349,7 +366,7 @@ async def treat_old_file(update: Update, context: ContextTypes.DEFAULT_TYPE):
         elif len(main_tex_files) == 0:
             await context.bot.send_message(
                 chat_id=update.effective_chat.id,
-                text='Sorry, I could not find any `.tex` file with `\documentclass` in it\. Try another one',
+                text='Sorry, I could not find any `.tex` file with `\documentclass` in it\. Try another one\.',
                 parse_mode=constants.ParseMode.MARKDOWN_V2
             )
             return SEND_OLD_FILE
@@ -360,12 +377,23 @@ async def treat_old_file(update: Update, context: ContextTypes.DEFAULT_TYPE):
             )
             # DO THE DIFF PDF
             #################
+            await update.message.reply_text(
+                text='Got you\! Making `diff.pdf` now\.\.\.',
+                parse_mode=constants.ParseMode.MARKDOWN_V2,
+            )
             await do_latexdiff_and_collage(working_dir=working_dir, chat_id=chat_id)
             path_to_diff = os.path.join(working_dir, DEFAULT_NEW_DIR, DIFF_PDF_NAME)
-            await context.bot.send_document(
-                chat_id=chat_id,
-                document=open(path_to_diff, 'rb')
-            )
+            if os.path.exists(path_to_diff):
+                await context.bot.send_document(
+                    chat_id=chat_id,
+                    document=open(path_to_diff, 'rb')
+                )
+            else:
+                await query.edit_message_text(
+                    text='''Failed :\(''',
+                    parse_mode=constants.ParseMode.MARKDOWN_V2
+                )
+
             # clean up
             shutil.rmtree(os.path.join(working_dir, DEFAULT_NEW_DIR))
             shutil.rmtree(os.path.join(working_dir, DEFAULT_OLD_DIR))
@@ -399,7 +427,7 @@ async def treat_new_file(update: Update, context: ContextTypes.DEFAULT_TYPE):
         await TheFile.download_to_drive(custom_path=new_tex_path)
         await context.bot.send_message(
             chat_id=update.effective_chat.id,
-            text='Got it\. Now send the old version \(`tex` or `zip`\)',
+            text='Got it\. Now send the old version \(`tex` or `zip`\)\.',
             parse_mode=constants.ParseMode.MARKDOWN_V2
         )
 
@@ -428,7 +456,7 @@ async def treat_new_file(update: Update, context: ContextTypes.DEFAULT_TYPE):
             
             reply_markup = InlineKeyboardMarkup(keyboard)
             await update.message.reply_text(
-                text='It seems that there are more then one main `.tex` files\. Select the one you wish to compare',
+                text='It seems that there are more then one main `.tex` files\. Select the one you wish to compare\.',
                 parse_mode=constants.ParseMode.MARKDOWN_V2,
                 reply_markup=reply_markup
             )
@@ -436,7 +464,7 @@ async def treat_new_file(update: Update, context: ContextTypes.DEFAULT_TYPE):
         elif len(main_tex_files) == 0:
             await context.bot.send_message(
                 chat_id=update.effective_chat.id,
-                text='Sorry, I could not find any `.tex` file with `\documentclass` in it\. Try another one',
+                text='Sorry, I could not find any `.tex` file with `\documentclass` in it\. Try another one\.',
                 parse_mode=constants.ParseMode.MARKDOWN_V2
             )
             return SEND_NEW_FILE
@@ -447,7 +475,7 @@ async def treat_new_file(update: Update, context: ContextTypes.DEFAULT_TYPE):
             )
             await context.bot.send_message(
                 chat_id=update.effective_chat.id,
-                text='''Got it\! Now send the old version \(`tex` or `zip`\)''',
+                text='''Got it\! Now send the old version \(`tex` or `zip`\)\.''',
                 parse_mode=constants.ParseMode.MARKDOWN_V2
             )
             return SEND_OLD_FILE
