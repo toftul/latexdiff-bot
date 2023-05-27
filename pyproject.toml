@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "latexdiff-bot"
-version = "0.1.0"
+version = "0.1.1"
 description = "latexdiff bit which produces diff.pdf directly"
 authors = ["Ivan Toftul <toftul.ivan@gmail.com>"]
 readme = "README.md"
