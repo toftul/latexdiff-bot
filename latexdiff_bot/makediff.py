@@ -85,7 +85,7 @@ def make_all_collages(old_image_paths_full, new_image_paths_full, changed_images
                     path_img_diff=new_image_paths_full[i]
                 )
 
-def latexdiffpdf(old_tex_file, new_tex_file, dir_new_full, diff_file):
+def latexdiffpdf(old_tex_file, new_tex_file, dir_new_full, diff_file, time_limit_sec=360):
     full_path_diff_file = os.path.join(dir_new_full, diff_file)
     latexdiff_command = f'latexdiff {old_tex_file} {new_tex_file} > {full_path_diff_file}'
     subprocess.run(
@@ -96,11 +96,19 @@ def latexdiffpdf(old_tex_file, new_tex_file, dir_new_full, diff_file):
     
     # Compile the diff.tex file
     latexmk_command = f'latexmk -interaction=nonstopmode -cd -f -pdf {full_path_diff_file}'
-    subprocess.run(
-        latexmk_command, 
-        shell=True, 
-        #check=True
-    )
+    try:
+        subprocess.run(
+            latexmk_command, 
+            shell=True,
+            timeout=time_limit_sec, 
+            #check=True
+        )
+    except subprocess.TimeoutExpired:
+        print("Timeout!")
+    except subprocess.CalledProcessError:
+        print("Something went wrong.")
+    else:
+        print("The diff.pdf is ready!")
 
 def create_diffpdf(old_tex_file, new_tex_file, dir_new_full):
     diff_file = 'diff.tex'

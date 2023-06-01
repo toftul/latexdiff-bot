@@ -389,7 +389,7 @@ async def treat_old_file(update: Update, context: ContextTypes.DEFAULT_TYPE):
                     document=open(path_to_diff, 'rb')
                 )
             else:
-                await query.edit_message_text(
+                await update.message.reply_text(
                     text='''Failed :\(''',
                     parse_mode=constants.ParseMode.MARKDOWN_V2
                 )
