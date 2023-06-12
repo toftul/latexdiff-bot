@@ -57,6 +57,10 @@ async def start2(update, context):
     await update.message.reply_text('Please select a command:', reply_markup=reply_markup)
 
 
+async def command1(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    text = "You have pressed Command 1"
+
+    await update.message.reply_text(text=text)
 
 async def unknown(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await context.bot.send_message(
@@ -72,12 +76,16 @@ if __name__ == '__main__':
 
     start_handler = CommandHandler(command='start', callback=start2)
 
+    comm1 = CommandHandler(command='command1', callback=command1)
+
     #conv_handler = ConversationHandler(
     #    entry_points=[start_handler]
     #)
 
     # add handlers
     application.add_handler(start_handler)
+    application.add_handler(comm1)
+    
 
     # other
     unknown_handler = MessageHandler(filters.COMMAND, unknown)
