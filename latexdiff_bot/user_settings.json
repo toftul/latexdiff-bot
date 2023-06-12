@@ -1,5 +1,7 @@
 {
     "63688320": {
-        "touch_images": false
+        "imagediff": false,
+        "fast": false,
+        "compile": true
     }
 }

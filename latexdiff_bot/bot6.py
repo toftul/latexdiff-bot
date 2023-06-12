@@ -1,5 +1,6 @@
 import os
 import shutil
+import time
 from telegram import (
     Update,
     ReplyKeyboardMarkup,
@@ -30,7 +31,7 @@ logging.basicConfig(
     level=logging.INFO
 )
 
-from config import TOKEN_TEST as TOKEN
+from config import TOKEN_AGAIN as TOKEN
 
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -66,7 +67,7 @@ async def unknown(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 if __name__ == '__main__':
     application = ApplicationBuilder().token(
-        token="6025860352:AAE0zVvJPZIku0Sbz6XWKd01Zv_puBu86GE"
+        token=TOKEN
     ).build()
 
     start_handler = CommandHandler(command='start', callback=start2)
@@ -79,7 +80,7 @@ if __name__ == '__main__':
     application.add_handler(start_handler)
 
     # other
-    #unknown_handler = MessageHandler(filters.COMMAND, unknown)
-    #application.add_handler(unknown_handler)
+    unknown_handler = MessageHandler(filters.COMMAND, unknown)
+    application.add_handler(unknown_handler)
 
-    application.run_polling()
+    application.run_polling(timeout=30)
