@@ -2,6 +2,7 @@
 # python pydiff.py --oldtex /path/to/old.tex --newtex /path/to/new.tex --compile --fast --imagediff
 
 import argparse
+import os 
 
 
 def do_pydiff(path_to_oldtex, path_to_newtex, if_compile=True, if_fast=False, if_imagediff=False):
