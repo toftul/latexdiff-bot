@@ -26,3 +26,8 @@ elif [ $REMOTE = $BASE ]; then
 else
     echo "Diverged"
 fi
+
+
+git add latexdiff_bot/user_settings.json
+git commit -m "updated user settings"
+git push
