@@ -443,7 +443,7 @@ if __name__ == '__main__':
                 )
             ],
         },
-        conversation_timeout=300,  # [s]
+        #conversation_timeout=300,  # [s]
         fallbacks=[start_handler, cancel_handler]
     )
 
