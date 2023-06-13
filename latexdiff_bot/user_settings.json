@@ -3,5 +3,10 @@
         "imagediff": false,
         "fast": false,
         "compile": true
+    },
+    "5883046782": {
+        "imagediff": false,
+        "fast": false,
+        "compile": true
     }
 }
