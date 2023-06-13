@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "latexdiff-bot"
-version = "0.1.1"
+version = "0.1.2"
 description = "latexdiff bit which produces diff.pdf directly"
 authors = ["Ivan Toftul <toftul.ivan@gmail.com>"]
 readme = "README.md"
@@ -11,7 +11,7 @@ license = "MIT"
 
 [tool.poetry.dependencies]
 python = "^3.9"
-python-telegram-bot = "^20.0"
+python-telegram-bot = {extras = ["job-queue"], version = "^20.3"}
 icecream = "^2.1.0"
 Pillow = "^9.3.0"
 

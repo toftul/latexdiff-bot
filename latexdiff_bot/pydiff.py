@@ -4,8 +4,15 @@
 import argparse
 import os 
 import subprocess
+import zipfile
 
 from settings import *
+
+
+
+def extract(path_to_zip, target_dir):
+    with zipfile.ZipFile(path_to_zip, 'r') as target_zip:
+        target_zip.extractall(target_dir)
 
 
 def do_pydiff(path_to_oldtex, path_to_newtex, compile=True, fast=False, imagediff=False, time_limit=DEFAULT_COMPILE_TIME_LIMIT, difftexname=DEFAULT_DIFF_TEX_NAME):
@@ -48,7 +55,7 @@ def do_pydiff(path_to_oldtex, path_to_newtex, compile=True, fast=False, imagedif
         else:
             print("The diff.pdf is ready!")
 
-        return path_to_difftex, path_to_diffpdf
+    return path_to_difftex, path_to_diffpdf
 
 
 
@@ -85,3 +92,43 @@ if __name__ == "__main__":
 
     do_pydiff(**kwargs)
 
+## OLD
+# async def do_latexdiff_and_collage(working_dir, chat_id):
+#     touch_images = True
+#     config_json = load_json_file(USER_CONFIG_NAME)
+#     touch_images = False
+#     if str(chat_id) in config_json:
+#         touch_images = config_json[str(chat_id)]['touch_images']
+
+    
+#     dir_new_full = os.path.join(os.getcwd(), working_dir, DEFAULT_NEW_DIR)
+#     dir_old_full = os.path.join(os.getcwd(), working_dir, DEFAULT_OLD_DIR)
+
+#     new_tex_file = os.path.join(dir_new_full, DEFAULT_NEW_TEX)
+#     old_tex_file = os.path.join(dir_old_full, DEFAULT_OLD_TEX)
+    
+#     if touch_images:
+#         old_image_paths = get_image_paths(old_tex_file)
+#         new_image_paths = get_image_paths(new_tex_file)
+
+#         changed_images = find_changed_images(old_image_paths, new_image_paths)
+
+#         new_image_paths_full = []
+#         for i in range(len(new_image_paths)):
+#             new_image_paths_full.append(os.path.join(dir_new_full, new_image_paths[i]))
+
+#         old_image_paths_full = []
+#         for i in range(len(old_image_paths)):
+#             old_image_paths_full.append(os.path.join(dir_old_full, old_image_paths[i]))
+
+#         blank_image_path = os.path.join(os.getcwd(), 'blank.jpg')
+
+#         make_all_collages(old_image_paths_full, new_image_paths_full, changed_images, blank_image_path)
+    
+#     # DO THE DIFF PDF
+#     latexdiffpdf(
+#         old_tex_file=os.path.join(working_dir, DEFAULT_OLD_DIR, DEFAULT_OLD_TEX),
+#         new_tex_file=os.path.join(working_dir, DEFAULT_NEW_DIR, DEFAULT_NEW_TEX),
+#         dir_new_full=os.path.join(working_dir, DEFAULT_NEW_DIR),
+#         diff_file=DIFF_TEX_NAME
+#     )
