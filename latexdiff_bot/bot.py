@@ -37,7 +37,7 @@ logging.basicConfig(
 )
 
 # token for bot
-from config import TOKEN_TEST as TOKEN
+from config import TOKEN
 
 SEND_NEW_FILE, SEND_OLD_FILE, SELECT_NEW_MAIN_TEX, SELECT_OLD_MAIN_TEX = range(4)
 
