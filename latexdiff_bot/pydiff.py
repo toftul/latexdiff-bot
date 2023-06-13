@@ -25,7 +25,15 @@ def do_pydiff(path_to_oldtex, path_to_newtex, compile=True, fast=False, imagedif
     path_to_diffpdf = path_to_difftex.rsplit('.', 1)[0] + '.pdf'
     if compile:
         # Compile the diff.tex to diff.pdf
-        latexmk_command = f'latexmk -interaction=nonstopmode -cd -f -pdf {path_to_difftex}'
+        if imagediff:
+            # do collages
+            print('Option imagediff is not ready yet, sorry.')
+
+        if fast:
+            # no biblio, no references
+            latexmk_command = f"pdflatex -interaction=batchmode -output-directory='{newtex_dir}' '{path_to_difftex}'"
+        else:  
+            latexmk_command = f'latexmk -interaction=batchmode -cd -f -pdf {path_to_difftex}'
         try:
             subprocess.run(
                 latexmk_command, 
@@ -39,6 +47,8 @@ def do_pydiff(path_to_oldtex, path_to_newtex, compile=True, fast=False, imagedif
             print("Something went wrong.")
         else:
             print("The diff.pdf is ready!")
+
+        return path_to_difftex, path_to_diffpdf
 
 
 
@@ -57,15 +67,21 @@ if __name__ == "__main__":
 
     # Parse the command-line arguments
     args = parser.parse_args()
-    # print(args)
+    print(args)
 
-    do_pydiff(
-        path_to_oldtex=args.oldtex,
-        path_to_newtex=args.newtex,
-        compile=args.compile,
-        fast=args.fast,
-        imagediff=args.imagediff,
-        time_limit=args.timelimit,
-        difftexname=args.difftexname
-    )
+    kwargs = {
+        "path_to_oldtex": args.oldtex,
+        "path_to_newtex": args.newtex,
+        "compile": args.compile,
+        "fast": args.fast,
+        "imagediff": args.imagediff,
+    }
+
+    if args.timelimit is not None:
+        kwargs["time_limit"] = args.timelimit
+
+    if args.difftexname is not None:
+        kwargs["difftexname"] = args.difftexname
+
+    do_pydiff(**kwargs)
 
