@@ -63,5 +63,10 @@
         "imagediff": false,
         "fast": false,
         "compile": true
+    },
+    "73766389": {
+        "imagediff": false,
+        "fast": false,
+        "compile": true
     }
 }
