@@ -2,6 +2,11 @@
 
 Welcome to the LaTeX Diff Bot!
 
+There is an instanse of the bot hosted by myself:
+- https://t.me/latexdiffbot
+
+## About
+
 This bot allows you to generate a LaTeX diff file by comparing two versions of a LaTeX document and receive a PDF with the highlighted changes using [latexdiff](https://www.overleaf.com/learn/latex/Articles/Using_Latexdiff_For_Marking_Changes_To_Tex_Documents).
 
 Here's how you can use the bot:
